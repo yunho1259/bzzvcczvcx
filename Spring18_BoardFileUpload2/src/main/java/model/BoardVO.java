@@ -12,6 +12,14 @@ public class BoardVO {
 	//반드시 필드가 이게 추가되어야 한다.
 	private MemberVO memberVO;
 	
+
+
+
+
+
+
+
+
 	/// FileUpload 부분 추가 ///
 	private String orgfilename;
 	private String newfilename;
