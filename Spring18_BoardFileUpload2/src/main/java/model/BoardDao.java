@@ -12,6 +12,11 @@ public class BoardDao {
 		this.sqlSession = sqlSession;
 	}
 	
+
+
+
+
+
 	public int write(BoardVO bvo) throws SQLException{
 		return sqlSession.insert("boardSql.write", bvo);
 	}
