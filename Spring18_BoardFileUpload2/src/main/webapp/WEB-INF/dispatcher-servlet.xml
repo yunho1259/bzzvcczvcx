@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+<!--  1. DataSource -->
+<context:property-placeholder location="classpath:config/jdbc.properties"/>
+
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+	<property name="driverClassName" value="${JDBC.Driver}"/>
+	<property name="url" value="${JDBC.ConnectionURL}"/>
+	<property name="username" value="${JDBC.Username}"/>
+	<property name="password" value="${JDBC.Password}"/>
+</bean>
+
+<!--2. MyBatisFramework -->
+<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<property name="dataSource" ref="dataSource"/>
+	<property name="configLocation" value="classpath:config/SqlMapConfig.xml"/>
+</bean>
+<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+	<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean"/>
+</bean>
+
+<!-- 3. Model 빈 등록 -->
+<bean id="memberDao" class="model.MemberDao" 
+				p:sqlSession-ref="sqlSessionTemplate" />
+<bean id="memberService" class="model.MemberService"
+				p:memberDao-ref="memberDao" />
+<bean id="boardDao" class="model.BoardDao" 
+		p:sqlSession-ref="sqlSessionTemplate"/>			
+<bean id="boardService" class="model.BoardService" 
+		p:boardDao-ref="boardDao"/>		
+		
+<!-- 4. mvc라이브러리 빈 등록 -->
+<bean id="handlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+
+<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<property name="prefix" value="/" />
+	<property name="suffix" value=".jsp" />	
+</bean>
+
+<bean id="beanNameResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+	<property name="order" value="0" />
+</bean>
+
+<!-- FileUpload :: MultipartFile 빈 등록 -->
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<property name="defaultEncoding" value="euc-kr" />
+	<property name="maxUploadSize" value="-1"/>
+</bean>
+<!--Controller 등록  -->
+<bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+	<property name="paramName" value="command"/>
+</bean>
+<bean name="/member.do" class="controller.MemberController">
+	<property name="methodNameResolver" ref="methodNameResolver"/>
+	<property name="memberService" ref="memberService" />
+</bean>
+
+<bean name="/board.do" class="controller.BoardController">
+	<property name="methodNameResolver" ref="methodNameResolver"/>
+	<property name="boardService" ref="boardService" />
+	<property name="path">
+		<value>C:\\EFI\\cyj\\springPro3\\eclipse\\workspace\\Spring18_BoardFileUpload2\\src\\main\\webapp\\upload\\</value>
+	</property>
+</bean>
+<!-- Download를 처리하는 빈 정의 -->
+<bean name="downloadView" class="util.DownloadView"/>
+
+<bean id="JsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

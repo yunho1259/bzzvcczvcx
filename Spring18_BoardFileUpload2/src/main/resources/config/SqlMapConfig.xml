@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+	
+<configuration>
+	<!-- 단위 테스트시 추가  -->
+	 <properties resource="config/jdbc.properties"/> 
+	<settings>
+      <setting name="jdbcTypeForNull" value="NULL" />
+   </settings>
+	<typeAliases>
+		<typeAlias type="model.MemberVO" alias="member"/>
+		<typeAlias type="model.BoardVO" alias="board"/>
+	</typeAliases>
+	
+	
+	<!-- 단위 테스트시 추가.. -->
+		<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			<dataSource type="UNPOOLED">
+			
+				<property name="driver" value="${JDBC.Driver}"/>
+				<property name="url" value="${JDBC.ConnectionURL}"/>
+				<property name="username" value="${JDBC.Username}"/>
+				<property name="password" value="${JDBC.Password}"/>
+			</dataSource>
+		</environment>		
+	</environments> 
+	<mappers>
+		<mapper resource="sql/member_mapping.xml"/>
+		<mapper resource="sql/board_mapping.xml"/>
+	</mappers>
+</configuration>
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

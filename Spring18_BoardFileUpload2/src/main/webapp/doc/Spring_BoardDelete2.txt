@@ -1,0 +1,98 @@
+***** SpringMVC 로그인 게시판 ( select, delete 기능 ) *****
+
+***** step1 *****
+로그인 처리 
+로그인한 사용자는 글쓰기 허용 
+글쓴 이후에 개별 게시글 보기까지  
+
+**step2**
+목록보기 - 최근 게시물 5개만 (페이징은 이후에 처리) : 게시물 정보 외에 글 쓴 회원의 이름이 필요 
+	   목록보기(list.jsp) 까지는 비로그인 사용자가 목록 확인 가능 
+	   목록에서 링크된 개별 게시물 보기는 로그인한 사용자만 확인 가능하다. 
+	   비로그인 사용자가 클릭시에는 index.jsp 로 이동시킨다. 
+
+1. db modeling : 필요 테이블 , 컬럼 , 테이블 관계 , 제약조건 
+		
+		member |---0<- springboard
+		
+
+		create table member(
+			id varchar2(50) primary key,
+			password varchar2(50) not null,
+			name varchar2(50) not null,
+			address varchar2(50)
+		);
+
+		create sequence springboard_inst_seq nocache;
+		create table springboard(
+			no number primary key,
+			title varchar2(100) not null,
+			content varchar2(1000) not null,
+			count number default 0,
+			w_date date not null,
+			id varchar2(50) not null,
+			constraint fk_id foreign key(id) references member(id)
+		);
+
+2. 적용기술 : Spring MVC + DI + ibatis 
+
+3. file list :   < Model >
+		model.MemberVO
+		model.MemberDao
+		model.MemberService
+		
+		model.BoardVO(has a MemberVO)
+		model.BoardDao
+		model.BoardService
+		
+		< Controller >
+		control.MemberController
+		control.BoardController
+						 
+		< View >
+		member/login_result.jsp(alert 처리) 
+		board/write.jsp	,show_content.jsp , list.jsp
+			
+		< MetaData > : 
+		  WEB-INF/
+		         web.xml 
+			 dispatcher-servlet.xml
+			 
+		  src/config/	 
+			SqlMapConfig.xml
+		  src/sql/
+			  member.xml		
+			  board.xml 	
+						   
+**step1**
+	로그인 처리 
+	로그인한 사용자는 글쓰기 허용 
+	글쓴 이후에 개별 게시글 보기까지 						   		
+**step2**
+	1. 목록보기 - 최근 게시물 5개만 (페이징은 이후에 처리) : 게시물 정보 외에 글 쓴 회원의 이름이 필요 
+		목록보기(list.jsp) 까지는 비로그인 사용자가 목록 확인 가능 
+		목록에서 링크된 개별 게시물 보기는 로그인한 사용자만 확인 가능하다. 
+		비로그인 사용자가 클릭시에는 index.jsp 로 이동시킨다. 
+		
+	2. 개별 게시물 보기 (show_content.jsp) :
+		1) 목록에서 개별 게시물 조회시 count 가 1 씩 증가해야 한다. 
+		2) 자신의 게시물이 아닌 경우 
+		   게시물 보기만 가능하며, 수정 및 삭제 버튼은 보여주지 않는다.	
+		   이 경우 로그인한 회원의 아이디와 개별 게시물의 회원 아이디를 비교해야 하므로 
+		   개별 게시물 조회시 글쓴이의 아이디를 함께 조회해야 한다. 
+
+	
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				

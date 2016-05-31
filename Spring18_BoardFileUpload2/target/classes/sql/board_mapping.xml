@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="boardSql">
+	<!-- 전체 게시글 보기 위한 ResultMap -->
+	<!-- jdbcType ::
+		 insert, update, delete의 경우 nullable컬럼인 경우에만 필수이다.
+	 -->
+	<resultMap type="board" id="boardListRM">
+		<result property="no" column="no"/>
+		<result property="title" column="title"/>
+		<result property="count" column="count"/>
+		<result property="writeDate" column="w_date"/>
+		<result property="memberVO.name" column="name"/>
+	</resultMap>
+	
+	<insert id="write" parameterType="board">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT springboard_upload_seq.nextVal FROM dual
+		</selectKey>
+		INSERT 
+		INTO springboard_upload(no, title, content, w_date, id, orgfilename, newfilename)
+		VALUES(#{no}, #{title},#{content}, sysdate, #{memberVO.id}, #{orgfilename}, #{newfilename})
+	</insert>
+	
+	<select id="selectByNoForDate" resultType="string" parameterType="int">
+		SELECT w_date
+		FROM springboard_upload
+		WHERE no=#{value}
+	</select>
+	<resultMap type="board" id="boardRM" extends="boardListRM">
+		<result property="content" column="content"/>
+		<result property="memberVO.id" column="id"/>
+		<!-- fileupload 부분 추가.. -->
+		<result property="orgfilename" column="orgfilename"/>
+		<result property="newfilename" column="newfilename"/>
+	</resultMap>
+	<select id="showContent" resultMap="boardRM">
+		SELECT 
+		no, title, content, w_date, count, m.id, m.name, orgfilename, newfilename 
+		FROM springboard_upload s, member m
+		WHERE s.id = m.id AND s.no = #{value}
+	</select>
+	<!-- 페이징 처리..PagingBean없이 5개의 게시글이 보여지도록.. -->
+	<select id="getBoardList" resultMap="boardListRM">
+		SELECT no, title, count, w_date,name FROM
+		(SELECT no, title, count, w_date, CEIL(rownum/5) page, name
+		FROM
+		(SELECT  no, title, count, to_char(w_date,'YYYY.MM.DD') w_date,name 
+		FROM springboard_upload s, member m
+		where s.id = m.id
+		ORDER BY no DESC)) WHERE page=#{value}	
+	</select>
+	<delete id="deleteBoard">
+		DELETE FROM springboard_upload
+		WHERE no=#{value}
+	</delete>
+	<update id="updateCount">
+		UPDATE springboard_upload SET count= count+1 
+		WHERE no = #{value}
+	</update>
+	<update id="updateBoard" parameterType="board">
+	<!-- fileupload 추가 -->
+		UPDATE springboard_upload
+		SET title=#{title}, content=#{content}, orgfilename = #{orgfilename}, newfilename = #{newfilename}
+		WHERE no=#{no}
+	</update>
+	
+	<select id="totalCount" resultType="int">
+		SELECT count(-1) FROM springboard_upload
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
