@@ -11,10 +11,6 @@ public class BoardDao {
 	public void setSqlSession(SqlSessionTemplate sqlSession) {
 		this.sqlSession = sqlSession;
 	}
-	
-
-
-
 
 
 
